@@ -25,6 +25,18 @@ class CategoriaNew(LoginRequiredMixin, generic.CreateView):
   login_url="bases:login"
 
   def form_valid(self, form):
-      form.instance.usuarioCreado = self.request.user
+      form.instance.fechaCreacion = self.request.user
       return super().form_valid(form)
   
+
+class CategoriaEdit(LoginRequiredMixin, generic.UpdateView):
+    model=Categoria
+    template_name="inventario/categoria_form.html"
+    context_object_name = "obj"
+    form_class=CategoriaForm
+    success_url=reverse_lazy("inventario:categoria_list")
+    login_url="bases:login"
+
+    def form_valid(self, form):
+        form.instance.fechaModificada = self.request.user.id
+        return super().form_valid(form)
