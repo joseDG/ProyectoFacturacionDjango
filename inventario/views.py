@@ -5,8 +5,8 @@ from django.urls import reverse_lazy
 #importar el auth de django
 from django.contrib.auth.mixins import LoginRequiredMixin
 #importacion de los modelos cateroria
-from .models import Categoria, SubCategoria, Marca
-from .forms import CategoriaForm, SubCategoriaForm, MarcaForm
+from .models import Categoria, SubCategoria, Marca, UnidadMedida
+from .forms import CategoriaForm, SubCategoriaForm, MarcaForm, UMForm
 
 # Create your views here.
 class CategoriaView(LoginRequiredMixin, generic.ListView):
@@ -142,3 +142,39 @@ def marca_inactivar(request, id):
         return redirect("inventario:marca_list")
 
     return render(request,template_name,contexto)
+
+
+class UMView(LoginRequiredMixin, generic.ListView):
+    model = UnidadMedida
+    template_name = "inventario/um_list.html"
+    context_object_name = "obj"
+    #permission_required="inv.view_unidadmedida"
+
+class UMNew(LoginRequiredMixin, generic.CreateView):
+    model=UnidadMedida
+    template_name="inventario/um_form.html"
+    context_object_name = 'obj'
+    form_class=UMForm
+    success_url= reverse_lazy("inventario:um_list")
+    success_message="Unidad Medida Creada"
+    #permission_required="inv.add_unidadmedida"
+
+    def form_valid(self, form):
+        form.instance.usuarioCreado = self.request.user
+        print(self.request.user.id)
+        return super().form_valid(form)
+
+
+class UMEdit(LoginRequiredMixin, generic.UpdateView):
+    model=UnidadMedida
+    template_name="inventario/um_form.html"
+    context_object_name = 'obj'
+    form_class=UMForm
+    success_url= reverse_lazy("inventario:um_list")
+    success_message="Unidad Medida Editada"
+    #permission_required="inv.change_unidadmedida"
+
+    def form_valid(self, form):
+        form.instance.usuarioModificado = self.request.user.id
+        print(self.request.user.id)
+        return super().form_valid(form)
