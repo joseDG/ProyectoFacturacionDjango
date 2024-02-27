@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 #importar el auth de django
 from django.contrib.auth.mixins import LoginRequiredMixin
 #importacion de los modelos cateroria
-from .models import Categoria, SubCategoria, Marca, UnidadMedida
+from .models import Categoria, SubCategoria, Marca, UnidadMedida, Producto
 from .forms import CategoriaForm, SubCategoriaForm, MarcaForm, UMForm
 
 # Create your views here.
@@ -178,3 +178,21 @@ class UMEdit(LoginRequiredMixin, generic.UpdateView):
         form.instance.usuarioModificado = self.request.user.id
         print(self.request.user.id)
         return super().form_valid(form)
+
+def um_inactivar(request, id):
+    um = UnidadMedida.objects.filter(pk=id).first()
+    contexto={}
+    template_name="inventario/catalogos_del.html"
+
+    if not um:
+        return redirect("inventario:um_list")
+    
+    if request.method=='GET':
+        contexto={'obj':um}
+    
+    if request.method=='POST':
+        um.estado=False
+        um.save()
+        return redirect("inventario:um_list")
+
+    return render(request,template_name,contexto)
