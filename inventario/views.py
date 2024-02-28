@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 #importacion de los modelos cateroria
 from .models import Categoria, SubCategoria, Marca, UnidadMedida, Producto
-from .forms import CategoriaForm, SubCategoriaForm, MarcaForm, UMForm
+from .forms import CategoriaForm, SubCategoriaForm, MarcaForm, UMForm, ProductoForm
 
 # Create your views here.
 class CategoriaView(LoginRequiredMixin, generic.ListView):
@@ -194,5 +194,77 @@ def um_inactivar(request, id):
         um.estado=False
         um.save()
         return redirect("inventario:um_list")
+
+    return render(request,template_name,contexto)
+
+
+class ProductoView(LoginRequiredMixin, generic.ListView):
+    model = Producto
+    template_name = "inventario/prducto_list.html"
+    context_object_name = "obj"
+    #permission_required="inv.view_producto"
+
+
+class ProductoNew(LoginRequiredMixin, generic.CreateView):
+    model=Producto
+    template_name="inventario/producto_form.html"
+    context_object_name = 'obj'
+    form_class=ProductoForm
+    success_url= reverse_lazy("inventario:producto_list")
+    #success_message="Producto Creado"
+    #permission_required="inv.add_producto"
+
+    def form_valid(self, form):
+        form.instance.usuarioCreado = self.request.user
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super(ProductoNew, self).get_context_data(**kwargs)
+        context["categorias"] = Categoria.objects.all()
+        context["subcategorias"] = SubCategoria.objects.all()
+        return context
+
+
+
+class ProductoEdit(LoginRequiredMixin, generic.UpdateView):
+    model=Producto
+    template_name="inventario/producto_form.html"
+    context_object_name = 'obj'
+    form_class=ProductoForm
+    success_url= reverse_lazy("inventario:producto_list")
+    #success_message="Producto Editado"
+    #permission_required="inv.change_producto"
+
+    def form_valid(self, form):
+        form.instance.usuarioModificado = self.request.user.id
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs.get('pk')
+
+        context = super(ProductoEdit, self).get_context_data(**kwargs)
+        context["categorias"] = Categoria.objects.all()
+        context["subcategorias"] = SubCategoria.objects.all()
+        context["obj"] = Producto.objects.filter(pk=pk).first()
+
+        return context
+
+
+
+def producto_inactivar(request, id):
+    prod = Producto.objects.filter(pk=id).first()
+    contexto={}
+    template_name="inventario/catalogos_del.html"
+
+    if not prod:
+        return redirect("inventario:producto_list")
+    
+    if request.method=='GET':
+        contexto={'obj':prod}
+    
+    if request.method=='POST':
+        prod.estado=False
+        prod.save()
+        return redirect("inventario:producto_list")
 
     return render(request,template_name,contexto)

@@ -75,6 +75,7 @@
             <a class="collapse-item" href="{% url 'inventario:subcategoria_list' %}">Sub Categorias</a>
             <a class="collapse-item" href="{% url 'inventario:marca_list' %}">Marca</a>
             <a class="collapse-item" href="{% url 'inventario:um_list' %}">Unidad Medida</a>
+            <a class="collapse-item" href="{% url 'inventario:producto_list' %}">Producto</a>
           </div>
         </div>
       </li>
@@ -325,8 +326,8 @@
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
-                <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user.username }}</span>
+                <img class="img-profile rounded-circle" src="{% static 'base/img/user.png' %}">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -432,7 +433,49 @@
   <script src="{% static 'base/vendor/datatables/jquery.dataTables.min.js'%}"></script>
   <script src="{% static 'base/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
 
+ 
+
+  {% block control_modal%}
+  <script>
+      function abrir_modal(url) {
+
+        $("#popup").load(url, function () {
+          $(this).modal({
+            backdrop: 'static',
+            keyboard: false
+          })
+          $(this).modal('show');
+        });
+        return false;
+      }
+
+      function cerrar_modal() {
+        $('#popup').modal('hide');
+        return false;
+      }
+
+      function mensaje(msg, color = 'green') {
+        if (color == "success") {
+          color = "green";
+        }
+        if (color == "error") {
+          color = "red";
+        }
+
+
+        $.alert({
+          title: '',
+          theme: 'material',
+          type: color,
+          content: msg
+        });
+      }
+
+   </script>
+
+  {% endblock%}
   {% block js_page %} {% endblock %}
+
 </body>
 
 </html>
