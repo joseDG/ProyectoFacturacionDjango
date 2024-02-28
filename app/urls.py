@@ -21,6 +21,7 @@ urlpatterns = [
   
     path('',include(('bases.urls', 'bases'), namespace='bases')),
     path('inventario/',include(('inventario.urls', 'inventario'), namespace='inventario')),
+    path('cmp/', include(('cmp.urls', 'cmp'), namespace='cmp')),
     
     path('admin/', admin.site.urls),
 ]

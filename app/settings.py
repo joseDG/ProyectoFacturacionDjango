@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     #apps nuevas
     'bases',
     'inventario',
+    'cmp',
 ]
 
 MIDDLEWARE = [
